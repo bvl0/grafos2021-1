@@ -5,8 +5,8 @@
 #include<stdio.h>
 #include<string.h>
 
-void readData(char* filePath,int* nVertex,int* nEdges,int** edges);
-int** getMatrix(int* nVertex);
+int** readData(char* filePath,int* nVertex,int* nEdges,int** edges);
+int** getMatrix(int nVertex);
 
 
 #endif // !IO_H_
