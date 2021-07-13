@@ -7,3 +7,4 @@ vertex* createVertex(int nome, int weight){
   aux->edgeList = createList();
   return aux;
 }
+

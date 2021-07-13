@@ -45,6 +45,9 @@ void deleteList(List *list) {
     Item *p = list->head;
     for (int i = 0; i < list->length; i += 1) {
         list->head = list->head->next;
+        vertex* aux =  p->element;
+        free(aux->edgeList);
+        free(aux);
         free(p);
         p = list->head;
     }

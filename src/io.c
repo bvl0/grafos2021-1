@@ -9,7 +9,7 @@
 
     for(int i=0;i<nVertex;i++){
       for(int j = 0;j < nVertex;j++){
-        matrix[i][j]=-1;
+        matrix[i][j]=0;
       }
     }
     
@@ -53,16 +53,28 @@
     }
     
     fscanf(file,"%d", &thirdWord);
-    edges[atoi(firstWord) -1][atoi(secondWord) -1] = thirdWord;
+    if(thirdWord == 0){
+      edges[atoi(firstWord) -1][atoi(secondWord) -1] = 1;
+      valorado = 0;
+    }
+    else{
+      *valorado = 1;
+      edges[atoi(firstWord) -1][atoi(secondWord) -1] = thirdWord;
+    }
     
     for(int i=1;i < *nEdges;i++){
       int arg1,arg2,arg3;
       fscanf(file,"%d %d %d",&arg1, &arg2, &arg3);
-      if(arg3 != 0){
-        *valorado = 1;
+      if(valorado == 0){
+        edges[arg1-1][arg2-1] = 1;
       }
-      edges[arg1-1][arg2-1] = arg3;
+      else{
+        puts("serase");
+        edges[arg1-1][arg2-1] = arg3;
+      }
     }
+    fclose(file);
+    free(buffer);
     return edges;
   }
 
@@ -93,19 +105,20 @@ vertex* readDataVertexVersion(char* filePath,int* nVertex,int* nEdges,int* valor
     }
     
     fscanf(file,"%d", &thirdWord);
-    
+    if(thirdWord !=0){
+      *valorado = 1;
+    }
     vertex* aux = createVertex(atoi(secondWord),thirdWord);
     pushToList(edgesList[atoi(firstWord)-1].edgeList,aux);
     
     for(int i=1;i < *nEdges;i++){
       int arg1,arg2,arg3;
       fscanf(file,"%d %d %d",&arg1, &arg2, &arg3);
-      if(arg3 != 0){
-        *valorado = 1;
-      }
       vertex* aux = createVertex(arg2,arg3);
       pushToList(edgesList[arg1-1].edgeList,aux);
     }
+    fclose(file);
+    free(buffer);
     return edgesList;
   }
 

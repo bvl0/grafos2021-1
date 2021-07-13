@@ -10,7 +10,7 @@ void printMatrix(int** matrix, int nVertex, char* direcionado, int valorado){
   printf("graph G\n{\n");
   for(int i=0;i<nVertex;i++){
     for(int j = 0;j < nVertex;j++){
-      if(matrix[i][j]!=-1){
+      if(matrix[i][j]!=0){
         if(!direcionado && valorado == 0){
           printf("  %d -- %d;\n",i+1,j+1);
         }
@@ -45,6 +45,22 @@ void printaSaida(int** edges, vertex* edgesList,int nVertex,int choose,char* dir
   }
 }
 
+void freeMatrix(int** edges, int nVertex){
+  for (size_t i = 0; i < nVertex; i++)
+  {
+    free(edges[i]);
+  }
+  free(edges); 
+}
+
+void freeList(vertex* list, int nVertex){
+  for (size_t i = 0; i < nVertex; i++)
+  {
+    deleteList(list[i].edgeList);
+    free(list[i].edgeList);
+  }
+  free(list);
+}
 
 int main() {
   int* nVertex = malloc(sizeof(int));
@@ -71,6 +87,17 @@ int main() {
     edgesList = readDataVertexVersion(filePath,nVertex,nEdges,&valorado,edgesList);
   }
   printaSaida(edges,edgesList,*nVertex,choose,direcionado,valorado);
+
+  if(choose == 1){
+    freeMatrix(edges,*nVertex);
+  }
+  if (choose == 2)
+  {
+    freeList(edgesList,*nVertex);
+  }
+  
+  free(nVertex);
+  free(nEdges);
 }
 
 
