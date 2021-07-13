@@ -20,6 +20,6 @@ void deleteList(List *);
 
 void printList(List *);
 
-void printListV2(List *list, int root, char* direcionado, int valorado);
+void printListV2(List *list, int root, char* direcionado, int valorado, FILE* file);
 
 #endif

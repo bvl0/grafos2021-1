@@ -67,7 +67,7 @@ void printList(List *list) {
     putchar('\n');
 }
 
-void printListV2(List *list, int root, char* direcionado, int valorado) {
+void printListV2(List *list, int root, char* direcionado, int valorado, FILE* file) {
     Item *p = list->head;
     for (int i = 0; i < list->length; i += 1) {
         if(p->element == NULL){
@@ -75,16 +75,16 @@ void printListV2(List *list, int root, char* direcionado, int valorado) {
         }
         vertex* value = p->element;
         if(!direcionado && valorado == 0){
-            printf("    %d -- %d;\n",root,value->name);
+            fprintf(file,"  %d -- %d;\n",root,value->name);
         }
         else if(!direcionado && valorado ==1){
-            printf("    %d -- %d[label = %d]\n",root, value->name, value->weight);
+            fprintf(file,"  %d -- %d[label = %d]\n",root, value->name, value->weight);
         }
         else if(direcionado && valorado ==0){
-            printf("    %d -> %d;\n",root,value->name);
+            fprintf(file,"  %d -> %d;\n",root,value->name);
         }
         else{
-            printf("    %d -> %d[label = %d]\n",root, value->name, value->weight);;
+            fprintf(file,"  %d -> %d[label = %d]\n",root, value->name, value->weight);;
         } 
         p = p->next;
     }
