@@ -7,6 +7,49 @@
 #include"../lib/list.h"
 
 
+char* getOutfilePath(char* filePath,int nVertex, int nEdges, char* direcionado, int valorado);
+
+void printMatrix(int** matrix, int nVertex, int nEdges, char* direcionado, int valorado,char* filePath);
+
+void printEdgeList(vertex* list, int nVertex, int nEdges, char* direcionado, int valorado, char* filePath);
+
+void printaSaida(int** edges, vertex* edgesList,int nVertex,int nEdges,int choose,char* direcionado,int valorado, char* filePath);
+
+void freeMatrix(int** edges, int nVertex);
+
+void freeList(vertex* list, int nVertex);
+
+int main(int argc, char **argv) {
+  //declaração das variaveis uteis pras proximas funcoes
+  int* nVertex = malloc(sizeof(int));
+  int* nEdges= malloc(sizeof(int));
+  int** edges;
+  vertex* edgesList;
+  char* filePath = argv[1];
+  char* direcionado;
+  int valorado = 0;
+  direcionado = strstr(filePath,"digrafo");
+
+  puts("Choose one: ");
+  puts("1- Matriz de adjascencia \n2- Lista de adjascencia");
+
+  int choose;
+  scanf("%d",&choose);
+  if(choose == 1) {
+    edges = readData(filePath,nVertex,nEdges,&valorado,edges);//funcao que le os dados e cria a matriz
+    printaSaida(edges,edgesList,*nVertex,*nEdges,choose,direcionado,valorado,filePath);
+    freeMatrix(edges,*nVertex);
+  }
+  if(choose ==2 ) {
+    edgesList = readDataVertexVersion(filePath,nVertex,nEdges,&valorado,edgesList);
+    printaSaida(edges,edgesList,*nVertex,*nEdges,choose,direcionado,valorado,filePath);
+    freeList(edgesList,*nVertex);
+  }
+  
+  free(nVertex);
+  free(nEdges);
+}
+
 char* getOutfilePath(char* filePath,int nVertex, int nEdges, char* direcionado, int valorado){
   if(valorado == 0){
     char* new = malloc((strlen(filePath) +5)*sizeof(char));
@@ -87,10 +130,13 @@ char* getOutfilePath(char* filePath,int nVertex, int nEdges, char* direcionado, 
 
 void printMatrix(int** matrix, int nVertex, int nEdges, char* direcionado, int valorado,char* filePath){
   char* outputPath = getOutfilePath(filePath,nVertex,nEdges,direcionado,valorado);
-  puts(outputPath);
   FILE* file = fopen(outputPath,"w");
-
-  fprintf(file,"graph G\n{\n");
+  if(direcionado){
+    fprintf(file,"digraph G\n{\n");
+  }
+  else{
+    fprintf(file,"graph G\n{\n");
+  }
   for(int i=0;i<nVertex;i++){
     for(int j = 0;j < nVertex;j++){
       if(matrix[i][j]!=0){
@@ -116,7 +162,12 @@ void printMatrix(int** matrix, int nVertex, int nEdges, char* direcionado, int v
 void printEdgeList(vertex* list, int nVertex, int nEdges, char* direcionado, int valorado, char* filePath) {
   char* outputPath = getOutfilePath(filePath,nVertex,nEdges,direcionado,valorado);
   FILE* file = fopen(outputPath,"w");
-  fprintf(file,"graph G\n{\n");
+  if(direcionado){
+    fprintf(file,"digraph G\n{\n");
+  }
+  else{
+    fprintf(file,"graph G\n{\n");
+  }
   for(int i=0;i<nVertex;i++){
     printListV2(list[i].edgeList,i+1,direcionado,valorado,file);
   }
@@ -150,43 +201,3 @@ void freeList(vertex* list, int nVertex){
   }
   free(list);
 }
-
-int main() {
-  int* nVertex = malloc(sizeof(int));
-  int* nEdges= malloc(sizeof(int));
-  int tipo;
-  int** edges;
-  vertex* edgesList;
-  char* filePath = "./data/digrafo_8_11.txt";
-  char* direcionado;
-  int valorado = 0;
-
-  direcionado = strstr(filePath,"digrafo");
-
-  puts("Choose one: ");
-  puts("1- Matriz de adjacencia \n 2- Lista de adjascencia");
-
-  int choose;
-  scanf("%d",&choose);
-  if(choose == 1) {
-    edges = readData(filePath,nVertex,nEdges,&valorado,edges);
-    printf("%d aaa",*nVertex);
-  }
-  if(choose ==2 ) {
-    edgesList = readDataVertexVersion(filePath,nVertex,nEdges,&valorado,edgesList);
-  }
-  printaSaida(edges,edgesList,*nVertex,*nEdges,choose,direcionado,valorado,filePath);
-
-  if(choose == 1){
-    freeMatrix(edges,*nVertex);
-  }
-  if (choose == 2)
-  {
-    freeList(edgesList,*nVertex);
-  }
-  
-  free(nVertex);
-  free(nEdges);
-}
-
-

@@ -30,21 +30,25 @@
     size_t size = 100;
     char *buffer = malloc(size*sizeof(char));
     FILE* file = fopen(filePath,"r");
+    
     if(!file){
       puts("fail to read file.");
       exit(1);
     }
+    
     char firstWord[2];
     char secondWord[100];
     int thirdWord;
     fscanf(file, "%s %s", firstWord, secondWord);
+    
     while(!feof(file) && strcmp(firstWord,"c")==0){
       getline(&buffer,&size,file);
       fscanf(file, "%s %s", firstWord, secondWord);
     }  
+    
     *nVertex = atoi(firstWord);
     *nEdges = atoi(secondWord);
-    edges = getMatrix(*nVertex);
+    edges = getMatrix(*nVertex);//inicializa a matriz
     
     fscanf(file, "%s %s", firstWord, secondWord);
     while(!feof(file) && strcmp(firstWord,"c")==0){
@@ -53,7 +57,7 @@
     }
     
     fscanf(file,"%d", &thirdWord);
-    if(thirdWord == 0){
+    if(thirdWord == 0){ // se o grafo não for valorado o peso assume o valor 1 pra fins de legibilidade
       edges[atoi(firstWord) -1][atoi(secondWord) -1] = 1;
       valorado = 0;
     }
@@ -69,7 +73,6 @@
         edges[arg1-1][arg2-1] = 1;
       }
       else{
-        puts("serase");
         edges[arg1-1][arg2-1] = arg3;
       }
     }
@@ -79,21 +82,26 @@
   }
 
 vertex* readDataVertexVersion(char* filePath,int* nVertex,int* nEdges,int* valorado,vertex* edgesList){
+    //funcao parecidissima com a outra versao 
     size_t size = 100;
     char *buffer = malloc(size*sizeof(char));
     FILE* file = fopen(filePath,"r");
+    
     if(!file){
       puts("fail to read file.");
       exit(1);
     }
+    
     char firstWord[2];
     char secondWord[100];
     int thirdWord;
+    
     fscanf(file, "%s %s", firstWord, secondWord);
     while(!feof(file) && strcmp(firstWord,"c")==0){
       getline(&buffer,&size,file);
       fscanf(file, "%s %s", firstWord, secondWord);
     }  
+    
     *nVertex = atoi(firstWord);
     *nEdges = atoi(secondWord);
     edgesList = getVertex(*nVertex);
@@ -108,6 +116,7 @@ vertex* readDataVertexVersion(char* filePath,int* nVertex,int* nEdges,int* valor
     if(thirdWord !=0){
       *valorado = 1;
     }
+    
     vertex* aux = createVertex(atoi(secondWord),thirdWord);
     pushToList(edgesList[atoi(firstWord)-1].edgeList,aux);
     

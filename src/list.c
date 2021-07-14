@@ -70,9 +70,6 @@ void printList(List *list) {
 void printListV2(List *list, int root, char* direcionado, int valorado, FILE* file) {
     Item *p = list->head;
     for (int i = 0; i < list->length; i += 1) {
-        if(p->element == NULL){
-          puts("deu merda");
-        }
         vertex* value = p->element;
         if(!direcionado && valorado == 0){
             fprintf(file,"  %d -- %d;\n",root,value->name);
