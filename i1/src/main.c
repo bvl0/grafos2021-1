@@ -37,7 +37,8 @@ int main(int argc, char **argv) {
   scanf("%d",&choose);
   if(choose == 1) {
     edges = readData(filePath,nVertex,nEdges,&valorado,edges);//funcao que le os dados e cria a matriz
-    printaSaida(edges,edgesList,*nVertex,*nEdges,choose,direcionado,valorado,filePath);
+    maze(edges,nVertex,nEdges);
+    // printaSaida(edges,edgesList,*nVertex,*nEdges,choose,direcionado,valorado,filePath);
     freeMatrix(edges,*nVertex);
   }
   if(choose ==2 ) {
@@ -125,6 +126,10 @@ char* getOutfilePath(char* filePath,int nVertex, int nEdges, char* direcionado, 
     new[strlen(filePath) + 5]='\0';
     return new;
   }
+}
+
+void maze(int edges,int nVertex,int nEdges){
+  
 }
 
 
