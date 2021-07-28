@@ -8,204 +8,146 @@ typedef struct Vertex{
   struct list* edgeList;
 }vertex;
 
-
-char* getOutfilePath(char* filePath,int nVertex, int nEdges, char* direcionado, int valorado);
-
-void printMatrix(int** matrix, int nVertex, int nEdges, char* direcionado, int valorado,char* filePath);
-
-void printEdgeList(vertex* list, int nVertex, int nEdges, char* direcionado, int valorado, char* filePath);
-
-void printaSaida(int** edges, vertex* edgesList,int nVertex,int nEdges,int choose,char* direcionado,int valorado, char* filePath);
-
 void freeMatrix(int** edges, int nVertex);
 
-void freeList(vertex* list, int nVertex);
+typedef struct Test{
+  int startingVertex;
+  int nVertex;
+  int nEdges;
+  int** edges;
+}tests;
+
+int** getMatrix(int nVertex){
+    int** matrix = malloc(nVertex * sizeof(int*));
+    
+    int i;
+    for(i = 0;i < nVertex;i++){
+      matrix[i]= malloc(nVertex * sizeof(int));
+    }
+
+    for(i=0;i<nVertex;i++){
+      int j;
+      for(j = 0;j < nVertex;j++){
+        matrix[i][j]=0;
+      }
+    }
+    
+    return matrix;
+  }
+  
+  tests* readData(char* filePath,int* numTests){
+    size_t size = 100;
+    char *buffer = malloc(size*sizeof(char));
+    FILE* file = fopen(filePath,"r");
+    
+    if(!file){
+      puts("fail to read file.");
+      exit(1);
+    }
+    
+    fscanf(file,"%d ",numTests);
+    tests *testes = malloc(*numTests*sizeof(tests));
+    
+    size_t i;
+    for (i = 0; i < *numTests; i++)
+    {
+      int** edges;
+      int starting;
+      int a;
+      int b;
+      
+      fscanf(file,"%d",&starting);
+      testes[i].startingVertex = starting;
+      int nVertex = 0;
+      int nEdges = 0;
+      fscanf(file,"%d %d",&nVertex,&nEdges);
+        
+      testes[i].nEdges = nEdges;
+      testes[i].nVertex = nVertex;
+
+      //*nVertex =a;
+      //*nEdges = b;
+      edges = getMatrix(nVertex);//inicializa a matriz
+      int j;
+      for(j=0;j <nEdges;j++){
+        fscanf(file,"%d %d",&a, &b);
+        edges[a][b] = 1;
+      }
+      testes[i].edges = edges;
+    } 
+    
+    fclose(file);
+    free(buffer);
+    return testes;
+  }
+
+void maze(int** edges,int nVertex, int* nDuplas){
+  size_t i;
+  for (i = 0; i < nVertex; i++)
+  {
+    size_t j;
+    for (j = i+1; j < nVertex; j++)
+    {
+      if(edges[i][j] == 1 &&(edges[j][i]) == 1)
+        *nDuplas += 1;
+    }
+    
+  }
+}
+
 
 int main(int argc, char **argv) {
   //declaração das variaveis uteis pras proximas funcoes
-  int* nVertex = malloc(sizeof(int));
-  int* nEdges= malloc(sizeof(int));
-  int** edges;
-  vertex* edgesList;
+  //int* nVertex = malloc(sizeof(int));
+  //int* nEdges= malloc(sizeof(int));
+  int* nTests= malloc(sizeof(int));
+  tests *testes;
   char* filePath = argv[1];
-  char* direcionado;
-  int valorado = 0;
-  direcionado = strstr(filePath,"digrafo");
-
   puts("Choose one: ");
   puts("1- Matriz de adjascencia \n2- Lista de adjascencia");
 
   int choose;
-  scanf("%d",&choose);
   choose = 1;
   if(choose == 1) {
-    edges = readData(filePath,nVertex,nEdges,&valorado,edges);//funcao que le os dados e cria a matriz
-    maze(edges,nVertex,nEdges);
-    // printaSaida(edges,edgesList,*nVertex,*nEdges,choose,direcionado,valorado,filePath);
-    freeMatrix(edges,*nVertex);
+    puts(filePath);
+    testes = readData(filePath,nTests);//funcao que le os dados e cria a matriz
+    printf("teste %d \n",*nTests);
+    size_t i;
+    for (i = 0; i < *nTests; i++)
+    {
+      int menorCaminho;
+      int nDuplas=0;
+      maze(testes[i].edges,testes[i].nVertex,&nDuplas);
+      //printf("\n teste %d ",testes[i].nDuplas);
+      menorCaminho = (testes[i].nEdges - nDuplas) * 2;
+      //menorCaminho = (menorCaminho - testes[i].nDuplas) * 2;
+      printf("%d\n",menorCaminho);
+      
+    } 
+  for (i = 0; i < *nTests; i++)
+  {
+    freeMatrix(testes[i].edges,testes[i].nVertex);
+    //free(testes);
   }
-  if(choose ==2 ) {
-    edgesList = readDataVertexVersion(filePath,nVertex,nEdges,&valorado,edgesList);
-    printaSaida(edges,edgesList,*nVertex,*nEdges,choose,direcionado,valorado,filePath);
-    freeList(edgesList,*nVertex);
+   
   }
-  
-  free(nVertex);
-  free(nEdges);
-}
-
-char* getOutfilePath(char* filePath,int nVertex, int nEdges, char* direcionado, int valorado){
-  if(valorado == 0){
-    char* new = malloc((strlen(filePath) +5)*sizeof(char));
-    for (size_t i = 0; i < 7; i++)
-    {
-      new[i] = filePath[i];
-    }
-    new[7] = 'o';
-    new[8] = 'u';
-    new[9] = 't';
-    new[10] = '/';
-    for (size_t i = 11; i < strlen(filePath) + 5; i++)
-    {
-      new[i] = filePath[i-4];
-    }
-    new[strlen(filePath) +3]='t';
-    new[strlen(filePath) +2]='o';
-    new[strlen(filePath) +1]='d';
-    new[strlen(filePath) + 4]='\0';
-    return new;
-  }
-  else if(!direcionado && valorado ==1){
-    char* new = malloc((strlen(filePath) +6)*sizeof(char));
-    for (size_t i = 0; i < 7; i++)
-    {
-      new[i] = filePath[i];
-    }
-    new[7] = 'o';
-    new[8] = 'u';
-    new[9] = 't';
-    new[10] = '/';
-    for (size_t i = 11; i < 16; i++)
-    {
-      new[i] = filePath[i-4];
-    }
-
-    new[16] = 'v';
-
-    for (size_t i = 17; i < strlen(filePath) +6; i++)
-    {
-      new[i] = filePath[i-5];
-    }
-    new[strlen(filePath) +4]='t';
-    new[strlen(filePath) +3]='o';
-    new[strlen(filePath) +2]='d';
-    new[strlen(filePath) + 5]='\0';
-    return new;
-  }
-  else{
-    char* new = malloc((strlen(filePath) +6)*sizeof(char));
-    for (size_t i = 0; i < 7; i++)
-    {
-      new[i] = filePath[i];
-    }
-    new[7] = 'o';
-    new[8] = 'u';
-    new[9] = 't';
-    new[10] = '/';
-    for (size_t i = 11; i < 18; i++)
-    {
-      new[i] = filePath[i-4];
-    }
-
-    new[18] = 'v';
-
-    for (size_t i = 19; i < strlen(filePath) +6; i++)
-    {
-      new[i] = filePath[i-5];
-    }
-    new[strlen(filePath) +4]='t';
-    new[strlen(filePath) +3]='o';
-    new[strlen(filePath) +2]='d';
-    new[strlen(filePath) + 5]='\0';
-    return new;
-  }
-}
-
-void maze(int edges,int nVertex,int nEdges){
-  
+free(nTests);
 }
 
 
-void printMatrix(int** matrix, int nVertex, int nEdges, char* direcionado, int valorado,char* filePath){
-  char* outputPath = getOutfilePath(filePath,nVertex,nEdges,direcionado,valorado);
-  FILE* file = fopen(outputPath,"w");
-  if(direcionado){
-    fprintf(file,"digraph G\n{\n");
-  }
-  else{
-    fprintf(file,"graph G\n{\n");
-  }
-  for(int i=0;i<nVertex;i++){
-    for(int j = 0;j < nVertex;j++){
-      if(matrix[i][j]!=0){
-        if(!direcionado && valorado == 0){
-          fprintf(file,"  %d -- %d;\n",i+1,j+1);
-        }
-        else if(!direcionado && valorado ==1){
-          fprintf(file,"  %d -- %d[label = %d]\n",i+1,j+1,matrix[i][j]);
-        }
-        else if(direcionado && valorado ==0){
-          fprintf(file,"  %d -> %d;\n",i+1,j+1);
-        }
-        else{
-          fprintf(file,"  %d -> %d[label = %d]\n",i+1,j+1,matrix[i][j]);
-        }
-      }
-    }
-  }
-  fprintf(file,"}");
-  free(outputPath);
-  fclose(file);
-}
-void printEdgeList(vertex* list, int nVertex, int nEdges, char* direcionado, int valorado, char* filePath) {
-  char* outputPath = getOutfilePath(filePath,nVertex,nEdges,direcionado,valorado);
-  FILE* file = fopen(outputPath,"w");
-  if(direcionado){
-    fprintf(file,"digraph G\n{\n");
-  }
-  else{
-    fprintf(file,"graph G\n{\n");
-  }
-  for(int i=0;i<nVertex;i++){
-    printListV2(list[i].edgeList,i+1,direcionado,valorado,file);
-  }
-  fprintf(file,"}");
-  free(outputPath);
-  fclose(file);
-}
 
-void printaSaida(int** edges, vertex* edgesList,int nVertex,int nEdges,int choose,char* direcionado,int valorado, char* filePath){
-  if(choose == 1){
-    printMatrix(edges,nVertex,nEdges,direcionado,valorado,filePath); //printa matriz
-  }
-  if(choose == 2){
-    printEdgeList(edgesList,nVertex,nEdges,direcionado,valorado,filePath);//printa lista
-  }
-}
+
+
+
+
 
 void freeMatrix(int** edges, int nVertex){
-  for (size_t i = 0; i < nVertex; i++)
+  size_t i;
+  for (i = 0; i < nVertex; i++)
   {
     free(edges[i]);
   }
   free(edges); 
 }
 
-void freeList(vertex* list, int nVertex){
-  for (size_t i = 0; i < nVertex; i++)
-  {
-    deleteList(list[i].edgeList);
-    free(list[i].edgeList);
-  }
-  free(list);
-}
+
