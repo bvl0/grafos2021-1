@@ -35,17 +35,11 @@ int** getMatrix(int nVertex){
     return matrix;
   }
   
-  tests* readData(char* filePath,int* numTests){
+  tests* readData(int* numTests){
     size_t size = 100;
     char *buffer = malloc(size*sizeof(char));
-    FILE* file = fopen(filePath,"r");
     
-    if(!file){
-      puts("fail to read file.");
-      exit(1);
-    }
-    
-    fscanf(file,"%d ",numTests);
+    scanf("%d ",numTests);
     tests *testes = malloc(*numTests*sizeof(tests));
     
     size_t i;
@@ -56,11 +50,11 @@ int** getMatrix(int nVertex){
       int a;
       int b;
       
-      fscanf(file,"%d",&starting);
+      scanf("%d",&starting);
       testes[i].startingVertex = starting;
       int nVertex = 0;
       int nEdges = 0;
-      fscanf(file,"%d %d",&nVertex,&nEdges);
+      scanf("%d %d",&nVertex,&nEdges);
         
       testes[i].nEdges = nEdges;
       testes[i].nVertex = nVertex;
@@ -70,13 +64,12 @@ int** getMatrix(int nVertex){
       edges = getMatrix(nVertex);//inicializa a matriz
       int j;
       for(j=0;j <nEdges;j++){
-        fscanf(file,"%d %d",&a, &b);
+        scanf("%d %d",&a, &b);
         edges[a][b] = 1;
       }
       testes[i].edges = edges;
     } 
     
-    fclose(file);
     free(buffer);
     return testes;
   }
@@ -102,35 +95,24 @@ int main(int argc, char **argv) {
   //int* nEdges= malloc(sizeof(int));
   int* nTests= malloc(sizeof(int));
   tests *testes;
-  char* filePath = argv[1];
-  puts("Choose one: ");
-  puts("1- Matriz de adjascencia \n2- Lista de adjascencia");
-
-  int choose;
-  choose = 1;
-  if(choose == 1) {
-    puts(filePath);
-    testes = readData(filePath,nTests);//funcao que le os dados e cria a matriz
-    printf("teste %d \n",*nTests);
-    size_t i;
-    for (i = 0; i < *nTests; i++)
-    {
-      int menorCaminho;
-      int nDuplas=0;
-      maze(testes[i].edges,testes[i].nVertex,&nDuplas);
-      //printf("\n teste %d ",testes[i].nDuplas);
-      menorCaminho = (testes[i].nEdges - nDuplas) * 2;
-      //menorCaminho = (menorCaminho - testes[i].nDuplas) * 2;
-      printf("%d\n",menorCaminho);
-      
-    } 
+  testes = readData(nTests);//funcao que le os dados e cria a matriz
+  size_t i;
+  for (i = 0; i < *nTests; i++)
+  {
+    int menorCaminho;
+    int nDuplas=0;
+    maze(testes[i].edges,testes[i].nVertex,&nDuplas);
+    menorCaminho = (testes[i].nEdges - nDuplas) * 2;
+    printf("%d\n",menorCaminho);
+  } 
+  //printf("\n");
   for (i = 0; i < *nTests; i++)
   {
     freeMatrix(testes[i].edges,testes[i].nVertex);
     //free(testes);
   }
    
-  }
+
 free(nTests);
 }
 
